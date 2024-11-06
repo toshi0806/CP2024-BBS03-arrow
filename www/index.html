@@ -16,9 +16,80 @@
     <script src="www/config.js"></script>
 
     <script>
+// Firebaseの初期化
+firebase.initializeApp(firebaseConfig);
+
+$(function() {
+    // データベースの参照を取得
+    const postsRef = firebase.database().ref('posts');
+
+    // メッセージ表示処理
+    function showMessage(message, type = 'success') {
+        $('#messageArea').html("<div class=\"message " + type +"\">" + message + "</div>");
+    }
+
+    // エラーメッセージ表示処理
+    function showError(message) {
+        showMessage(message, 'error');
+    }
+
+    // 投稿処理
+    $('#postButton').on('click', function() {
+        // 投稿内容をフォームから取得
+        const authorVal = $('#authorInput').val();
+        const contentVal = $('#contentInput').val();
+
+        // 入力値の検証
+        if (!contentVal || !authorVal) {
+            showError('投稿内容と名前を入力してください');
+            return false;
+        }
+
+        // 投稿データの生成
+        const postData = {
+            author: authorVal,
+            content: contentVal,
+            timestamp: Date.now()
+        };
+
+        // データベースに投稿を追加
+
+        // この行に、投稿処理を記述！
+
+            .then(function() {
+                showMessage('投稿が完了しました！');
+                // 投稿フォームを初期化
+                $('#authorInput').val('');
+                $('#contentInput').val('');
+            })
+            .catch(function(error) {
+                console.error('Post error:', error);
+                showError('投稿に失敗しました：' + error.message);
+            });
+    });
+});
+
     </script>
 </head>
 <body>
+    <div class="container">
+        <h1>掲示板アプリ</h1>
+        
+        <!-- メッセージ表示エリア -->
+        <div id="messageArea"></div>
 
+        <!-- 投稿フォーム -->
+        <div class="post-form">
+            <div class="form-group">
+                <input type="text" id="authorInput" placeholder="名前">
+            </div>
+            <div class="form-group">
+                <textarea id="contentInput" placeholder="投稿内容"></textarea>
+            </div>
+            <div class="form-group">
+                <button id="postButton">投稿する</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
