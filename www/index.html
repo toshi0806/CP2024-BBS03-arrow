@@ -33,11 +33,6 @@ function showMessage(message, type = 'success') {
     }, 3000);
 }
 
-// エラーメッセージ表示処理
-function showError(message) {
-    showMessage(message, 'error');
-}
-
 // 文字数カウントの更新
 function updateCharacterCount(inputId, counterId, maxLength) {
     const input = $(`#${inputId}`);
