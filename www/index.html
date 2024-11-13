@@ -16,22 +16,22 @@
     <script src="www/config.js"></script>
 
     <script>
+// メッセージ表示処理
+function showMessage(message, type = 'success') {
+    $('#messageArea').html("<div class=\"message " + type +"\">" + message + "</div>");
+}
+
+// エラーメッセージ表示処理
+function showError(message) {
+    showMessage(message, 'error');
+}
+
 // Firebaseの初期化
 firebase.initializeApp(firebaseConfig);
 
 $(function() {
     // データベースの参照を取得
     const postsRef = firebase.database().ref('posts');
-
-    // メッセージ表示処理
-    function showMessage(message, type = 'success') {
-        $('#messageArea').html("<div class=\"message " + type +"\">" + message + "</div>");
-    }
-
-    // エラーメッセージ表示処理
-    function showError(message) {
-        showMessage(message, 'error');
-    }
 
     // 投稿処理
     $('#postButton').on('click', function() {
