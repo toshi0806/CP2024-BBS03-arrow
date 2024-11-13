@@ -16,6 +16,8 @@
     <script src="www/config.js"></script>
 
     <script>
+let postsRef;
+
 // メッセージ表示処理
 function showMessage(message, type = 'success') {
     const messageArea = $('#messageArea');
@@ -74,18 +76,45 @@ function validateInput(author, content) {
     return true;
 }
 
+// 投稿処理
+function createPost(author, content) {
+    if (!validateInput(author, content)) return;
+
+    const button = $('#postButton');
+    button.prop('disabled', true);
+
+    const postData = {
+        author: author,
+        content: content,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    postsRef.push(postData)
+        .then(function() {
+            showMessage('投稿が完了しました！');
+            $('#authorInput').val('');
+            $('#contentInput').val('');
+            updateCharacterCount('authorInput', 'authorCount', 20);
+            updateCharacterCount('contentInput', 'contentCount', 1000);
+        })
+        .catch(function(error) {
+            showMessage('投稿に失敗しました：' + error.message, 'error');
+        })
+        .finally(function() {
+            button.prop('disabled', false);
+        });
+}
+
 $(function() {
     // Firebaseの初期化
     try {
         firebase.initializeApp(firebaseConfig);
         console.log("Firebase initialized successfully");
+        postsRef = firebase.database().ref('posts');
     } catch (error) {
         console.error("Firebase initialization error:", error);
         showMessage('Firebaseの初期化に失敗しました', 'error');
     }
-
-    // データベースの参照を取得
-    const postsRef = firebase.database().ref('posts');
 
     // 文字数カウンターの初期化
     updateCharacterCount('authorInput', 'authorCount', 20);
@@ -103,36 +132,7 @@ $(function() {
         // 投稿内容をフォームから取得
         const authorVal = $('#authorInput').val();
         const contentVal = $('#contentInput').val();
-
-        // 入力値の検証
-        validateInput(contentVal, authorVal);
-
-        const button = $('#postButton');
-        button.prop('disabled', true);
-
-        // 投稿データの生成
-        const postData = {
-            author: authorVal,
-            content: contentVal,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        };
-
-        // データベースに投稿を追加
-        postsRef.push(postData)
-            .then(function() {
-                showMessage('投稿が完了しました！');
-                // 投稿フォームを初期化
-                $('#authorInput').val('');
-                $('#contentInput').val('');
-                updateCharacterCount('authorInput', 'authorCount', 20);
-                updateCharacterCount('contentInput', 'contentCount', 1000);
-            })
-            .catch(function(error) {
-                showMessage('投稿に失敗しました：' + error.message, 'error');
-            })
-            .finally(function() {
-                button.prop('disabled', false);
-            });
+        createPost(authorVal, contentVal);
     });
 });
 
