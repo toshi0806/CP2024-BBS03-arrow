@@ -29,7 +29,7 @@ function showMessage(message, type = 'success') {
     `);
     
     // 3秒後にメッセージを消す
-    setTimeout(function() {
+    setTimeout(() => {
         messageArea.empty();
     }, 3000);
 }
@@ -39,7 +39,7 @@ function updateCharacterCount(inputId, counterId, maxLength) {
     const input = $(`#${inputId}`);
     const counter = $(`#${counterId}`);
     
-    input.on('input', function() {
+    input.on('input', () => {
         const length = this.value.length;
         counter.text(`${length}/${maxLength}`);
     
@@ -86,17 +86,17 @@ function createPost(author, content) {
     };
 
     postsRef.push(postData)
-        .then(function() {
+        .then(() => {
             showMessage('投稿が完了しました！');
             $('#authorInput').val('');
             $('#contentInput').val('');
             updateCharacterCount('authorInput', 'authorCount', 20);
             updateCharacterCount('contentInput', 'contentCount', 1000);
         })
-        .catch(function(error) {
+        .catch((error) => {
             showMessage('投稿に失敗しました：' + error.message, 'error');
         })
-        .finally(function() {
+        .finally(() => {
             button.prop('disabled', false);
         });
 }
@@ -149,7 +149,7 @@ function renderPosts(posts) {
         return;
     }
 
-    posts.forEach(function(post) {
+    posts.forEach((post) => {
         postsDiv.append(createPostElement(post));
     });
 }
@@ -166,9 +166,9 @@ function loadPosts() {
     }
 
     // リスナーを設定
-    postsListener = postsRef.on('value', function(snapshot) {
+    postsListener = postsRef.on('value', (snapshot) => {
         const posts = [];
-        snapshot.forEach(function(childSnapshot) {
+        snapshot.forEach((childSnapshot) => {
             posts.push({
                 id: childSnapshot.key,
                 ...childSnapshot.val()
@@ -177,14 +177,14 @@ function loadPosts() {
 
         // 並び順の適用
         if (sortOrder === 'newest') {
-            posts.sort(function(a, b) {return b.timestamp - a.timestamp});
+            posts.sort((a, b) => b.timestamp - a.timestamp);
         } else {
-            posts.sort(function(a, b) {return a.timestamp - b.timestamp});
+            posts.sort((a, b) => a.timestamp - b.timestamp);
         }
 
         renderPosts(posts);
         $('#loadingSpinner').hide();
-    }, function(error) {
+    }, (error) => {
         console.error('Data fetch error:', error);
         showMessage('データの読み込みに失敗しました', 'error');
         $('#loadingSpinner').hide();
